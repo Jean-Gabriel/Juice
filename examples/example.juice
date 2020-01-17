@@ -1,0 +1,23 @@
+obj NumberInfo {
+    uint number;
+    boolean isPair;
+}
+
+fun isPair(uint number) {
+    return number % 2;
+}
+
+# this is a comment
+fun main() {
+    val numberInformation = new NumberInfo();
+    numberInformation.number = 2;
+
+    if(isPair(someNumber.number)) {
+        someNumber.isPair = true;
+    } else {
+        someNumber.isPair = false;
+    }
+
+    print(someNumber);
+    return 0;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "juice",
+  "version": "1.0.0",
+  "description": "Everyone can appreciate a good glass of juice.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "serve": "tsc && node dist/index.js",
+    "start": "ts-node src/index.ts"
+  },
+  "author": "Jean-Gabriel Doyon",
+  "license": "ISC"
+}
