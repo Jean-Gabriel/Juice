@@ -1,6 +1,6 @@
 import {Action} from "./domain/Action";
 import {DirectoryFileManager} from "./infrastructure/DirectoryFileManager";
-import {JuiceUI} from "./infrastructure/Juice/UI/JuiceUI";
+import {JuiceUI} from "./infrastructure/Juice/JuiceUI";
 import {Tokenizer} from "./domain/Juice/Token/Tokenizer";
 import {StringLexemeReader} from "./domain/Juice/utils/StringLexemeReader";
 import {UI} from "./domain/Juice/UI";
@@ -8,10 +8,10 @@ import {FileManager} from "./domain/FileManager";
 import {Parser} from "./domain/Juice/Ast/Parser";
 import {TokenReader} from "./domain/Juice/Token/TokenReader";
 
-const io: UI = new JuiceUI();
+const ui: UI = new JuiceUI();
 
 if(process.argv.length < 4) {
-    io.error('Juice needs an action and a file. (juice action file)');
+    ui.error('Juice needs an action and a file. (juice action file)');
     process.exit(1);
 }
 
@@ -27,10 +27,10 @@ if(action == Action.TOKENIZE) {
         const tokens = tokenizer.tokenize();
 
         for(const token of tokens) {
-            io.print(token.toString());
+            ui.print(token.toString());
         }
     } catch (error) {
-        io.print(error.toString());
+        ui.print(error.toString());
     }
 }
 
@@ -42,8 +42,8 @@ if(action == Action.PARSE) {
         const parser = new Parser(new TokenReader(tokens));
         const program = parser.parse() as any;
 
-        io.print(program.content);
+        ui.print(program.content);
     } catch (error) {
-        io.print(error.toString());
+        ui.print(error.toString());
     }
 }

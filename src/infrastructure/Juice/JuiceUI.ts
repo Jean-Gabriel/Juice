@@ -1,4 +1,4 @@
-import {UI} from "../../../domain/Juice/UI";
+import {UI} from "../../domain/Juice/UI";
 
 export class JuiceUI implements UI {
     private readonly prefix = "[Juice]:";

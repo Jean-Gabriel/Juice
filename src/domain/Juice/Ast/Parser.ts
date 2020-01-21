@@ -63,7 +63,7 @@ export class Parser {
         if(!this.tokenReader.currentTokenTypeMatches(TokenType.IDENTIFIER)) {
             this.report("Expected identifier after fun token");
         }
-        const identifier = this.tokenReader.previous().value();
+        const identifier = this.tokenReader.previous().getValue();
 
         if(!this.tokenReader.currentTokenTypeMatches(TokenType.LEFT_PARENTHESIS)) {
             this.report("Expected left parenthesis after function identifier");
@@ -120,7 +120,7 @@ export class Parser {
             this.report("Expected identifier after obj token");
         }
 
-        const identifier = this.tokenReader.previous().value();
+        const identifier = this.tokenReader.previous().getValue();
 
         if(!this.tokenReader.currentTokenTypeMatches(TokenType.LEFT_BRACKET)) {
             this.report("Expected left bracket after object identifier");
@@ -151,7 +151,7 @@ export class Parser {
         if(!this.tokenReader.currentTokenTypeMatches(TokenType.IDENTIFIER)) {
             this.report("Expected identifier token after val declaration");
         }
-        const identifier = this.tokenReader.previous().value();
+        const identifier = this.tokenReader.previous().getValue();
 
         if(!this.tokenReader.currentTokenTypeMatches(TokenType.EQUAL)) {
             this.report("Expected equal sign after val identifier");
@@ -163,7 +163,7 @@ export class Parser {
                 this.report("Expected identifier after new keyword");
             }
 
-            expression = new ObjectInstantiation(this.tokenReader.previous().value());
+            expression = new ObjectInstantiation(this.tokenReader.previous().getValue());
         } else {
             expression = this.parseExpression();
         }
@@ -304,13 +304,13 @@ export class Parser {
     }
 
     private parseAccessor() {
-        const accessor = new Accessor(this.tokenReader.previous().value());
+        const accessor = new Accessor(this.tokenReader.previous().getValue());
         while(this.tokenReader.currentTokenTypeMatches(TokenType.DOT)) {
             if(!this.tokenReader.currentTokenTypeMatches(TokenType.IDENTIFIER)) {
                 this.report("Expected identifier after dot");
             }
 
-            accessor.addLowerSubAccessor(new Accessor(this.tokenReader.previous().value()));
+            accessor.addLowerSubAccessor(new Accessor(this.tokenReader.previous().getValue()));
         }
 
         return accessor;
@@ -335,7 +335,7 @@ export class Parser {
                 this.report("Typed declaration expects an identifier after its type");
             }
 
-            typedValues.push(new TypedDeclaration(this.tokenReader.previous().value(), nativeType));
+            typedValues.push(new TypedDeclaration(this.tokenReader.previous().getValue(), nativeType));
         }
 
         return typedValues;
