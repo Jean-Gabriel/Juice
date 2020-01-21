@@ -1,5 +1,5 @@
 import {Token} from "./Token";
-import {StringLexemeReader} from "./StringLexemeReader";
+import {StringLexemeReader} from "../utils/StringLexemeReader";
 import {TokenType} from "./TokenType";
 
 export class Tokenizer {
@@ -23,6 +23,7 @@ export class Tokenizer {
         this.keywords.set('uint', TokenType.UINT_TYPE);
         this.keywords.set('boolean', TokenType.BOOLEAN_TYPE);
         this.keywords.set('string', TokenType.STRING_TYPE);
+        this.keywords.set('print', TokenType.PRINT);
     }
 
     tokenize(): Token[] {
@@ -42,11 +43,11 @@ export class Tokenizer {
                 case '}': this.addNonLiterateToken(TokenType.RIGHT_BRACKET); break;
                 case '-': this.addNonLiterateToken(TokenType.MINUS); break;
                 case '+': this.addNonLiterateToken(TokenType.PLUS); break;
-                case ';': this.addNonLiterateToken(TokenType.SEMICOLON); break;
                 case '*': this.addNonLiterateToken(TokenType.STAR); break;
                 case '%': this.addNonLiterateToken(TokenType.MODULO); break;
                 case '/': this.addNonLiterateToken(TokenType.SLASH); break;
                 case '.': this.addNonLiterateToken(TokenType.DOT); break;
+                case ",": this.addNonLiterateToken(TokenType.COMMA); break;
 
                 case '!': this.addNonLiterateToken(this.reader.match('=') ? TokenType.BANG_EQUAL : TokenType.BANG); break;
                 case '=': this.addNonLiterateToken(this.reader.match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;

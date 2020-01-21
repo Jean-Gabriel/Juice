@@ -1,14 +1,14 @@
 import {Action} from "./domain/Action";
 import {DirectoryFileManager} from "./infrastructure/DirectoryFileManager";
-import {NodeIO} from "./infrastructure/Juice/NodeIO/NodeIO";
+import {JuiceUI} from "./infrastructure/Juice/UI/JuiceUI";
 import {Tokenizer} from "./domain/Juice/Token/Tokenizer";
-import {StringLexemeReader} from "./domain/Juice/Token/StringLexemeReader";
-import {IO} from "./domain/Juice/IO";
+import {StringLexemeReader} from "./domain/Juice/utils/StringLexemeReader";
+import {UI} from "./domain/Juice/UI";
 import {FileManager} from "./domain/FileManager";
 import {Parser} from "./domain/Juice/Ast/Parser";
 import {TokenReader} from "./domain/Juice/Token/TokenReader";
 
-const io: IO = new NodeIO();
+const io: UI = new JuiceUI();
 
 if(process.argv.length < 4) {
     io.error('Juice needs an action and a file. (juice action file)');
@@ -34,15 +34,15 @@ if(action == Action.TOKENIZE) {
     }
 }
 
-if(action == Action.CREATE_EXPRESSIONS) {
+if(action == Action.PARSE) {
     try {
         const tokenizer = new Tokenizer(new StringLexemeReader(content));
         const tokens = tokenizer.tokenize();
 
         const parser = new Parser(new TokenReader(tokens));
-        const expression = parser.parse();
+        const program = parser.parse() as any;
 
-        io.print(expression);
+        io.print(program.content);
     } catch (error) {
         io.print(error.toString());
     }

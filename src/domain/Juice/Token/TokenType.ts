@@ -5,12 +5,12 @@ export enum TokenType {
     RIGHT_BRACKET,
     MINUS,
     PLUS,
-    SEMICOLON,
     SLASH,
     STAR,
     MODULO,
     HASH,
     DOT,
+    COMMA,
 
     BANG,
     BANG_EQUAL,
@@ -42,6 +42,5 @@ export enum TokenType {
     WHILE,
     AND,
     OR,
-
-    EOF,
+    PRINT,
 }

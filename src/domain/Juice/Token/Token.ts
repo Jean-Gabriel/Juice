@@ -19,6 +19,10 @@ export class Token {
         return this.type == type;
     }
 
+    public getType() {
+        return this.type;
+    }
+
     public getLine() {
         return this.line;
     }

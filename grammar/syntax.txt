@@ -1,10 +1,35 @@
-expression                  -> equality
+program                     -> declaration*
+
+declaration                 -> objDecl
+                             | funDecl
+                             | statement
+
+accessor                    -> IDENTIFIER ( "." IDENTIFIER )*
+funDecl                     -> "fun" IDENTIFIER "(" typedDecl ( "," typedDecl )* ")" funBody
+funBody                     -> "{" ( statement | valDecl )* "}"
+returnStmt                  -> "return" | expression ";"
+objDecl                     -> "obj" IDENTIFIER "{" ( typedDecl ";" )*  "}"
+typedDecl                   -> ( NUMBER_TYPE | STRING_TYPE | BOOLEAN_TYPE ) IDENTIFIER
+valDecl                     -> "val" IDENTIFIER "=" ( expression | objInstantiation ) ";"
+objInstantiation            -> "new" IDENTIFIER
+statement                   -> printStmt
+                             | returnStmt
+                             | expression
+
+printStmt                   -> "print" "(" expression ")" ";"
+expression                  -> assignment
+assignment                  -> accessor "=" assignment
+                             | equality
 equality                    -> comparison ( ( "!=" | "==" ) comparison )*
 comparison                  -> addition ( ( ">" | ">=" | "<" | "<=" ) addition )*
 addition                    -> multiplication ( ( "-" | "+" ) multiplication )*
 multiplication              -> unary ( ( "/" | "*" | "%" ) unary )*
 unary                       -> ( "!" | "-" ) unary
-                             | primary
+                             | call
+
+call                        -> primary ( "(" arguments? ")" )* ";"?
+arguments                   -> expression ( "," expression )*
 
 primary                     -> NUMBER | STRING | BOOLEAN | "null"
                              | "(" expression ")"
+                             | accessor

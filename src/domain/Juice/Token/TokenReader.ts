@@ -31,6 +31,10 @@ export class TokenReader {
         return this.tokens[this.currentToken];
     }
 
+    currentType() {
+        return this.current().getType();
+    }
+
     advance() {
         if(this.isAtEnd()) {
             return this.previous();

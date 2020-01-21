@@ -1,4 +1,4 @@
 export enum Action {
-    CREATE_EXPRESSIONS = 'create-exprs',
+    PARSE = 'parse',
     TOKENIZE = 'tokenize',
 }

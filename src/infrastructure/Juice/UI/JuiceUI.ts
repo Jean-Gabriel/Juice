@@ -1,6 +1,6 @@
-import {IO} from "../../../domain/Juice/IO";
+import {UI} from "../../../domain/Juice/UI";
 
-export class NodeIO implements IO {
+export class JuiceUI implements UI {
     private readonly prefix = "[Juice]:";
     private readonly errorPrefix = 'Error:';
 

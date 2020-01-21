@@ -1,23 +1,29 @@
-obj NumberInfo {
-    uint number;
-    boolean isPair;
+obj Person {
+    string fullName
+    uint age
+    boolean canDrive
 }
 
-fun isPair(uint number) {
-    return number % 2;
+fun canDriveWithAge(uint age, boolean a) {
+    return age >= 17
 }
 
-# this is a comment
+fun welcomeName(string message, string name) {
+    print(message)
+    print(name)
+}
+
 fun main() {
-    val numberInformation = new NumberInfo();
-    numberInformation.number = 2;
+    val welcomeMessage = "Wow hi"
+    val john = new Person
 
-    if(isPair(someNumber.number)) {
-        someNumber.isPair = true;
-    } else {
-        someNumber.isPair = false;
-    }
+    john.fullName = "John Pablo"
+    john.age = 21
+    john.canDrive = canDriveWithAge(john.age)
 
-    print(someNumber);
-    return 0;
+    welcomeName(welcomeMessage, john.fullName)
+
+    print(john.age) # 21
+    print(john.canDrive) # 1
+    return 0
 }

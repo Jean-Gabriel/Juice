@@ -1,0 +1,15 @@
+fun welcome(string message, string name) {
+    print(message)
+    print(name)
+}
+
+fun returnJohn() {
+    return "John"
+}
+
+fun main() {
+    val welcomeMessage = "Well hi"
+    val name = returnJohn()
+
+    welcome(welcomeMessage, name)
+}
