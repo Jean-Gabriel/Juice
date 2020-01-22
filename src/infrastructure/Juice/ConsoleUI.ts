@@ -1,6 +1,6 @@
 import {UI} from "../../domain/Juice/UI";
 
-export class JuiceUI implements UI {
+export class ConsoleUI implements UI {
     private readonly prefix = "[Juice]:";
     private readonly errorPrefix = 'Error:';
 

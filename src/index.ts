@@ -1,6 +1,6 @@
 import {Action} from "./domain/Action";
 import {DirectoryFileManager} from "./infrastructure/DirectoryFileManager";
-import {JuiceUI} from "./infrastructure/Juice/JuiceUI";
+import {ConsoleUI} from "./infrastructure/Juice/ConsoleUI";
 import {Tokenizer} from "./domain/Juice/Token/Tokenizer";
 import {StringLexemeReader} from "./domain/Juice/utils/StringLexemeReader";
 import {UI} from "./domain/Juice/UI";
@@ -8,7 +8,7 @@ import {FileManager} from "./domain/FileManager";
 import {Parser} from "./domain/Juice/Ast/Parser";
 import {TokenReader} from "./domain/Juice/Token/TokenReader";
 
-const ui: UI = new JuiceUI();
+const ui: UI = new ConsoleUI();
 
 if(process.argv.length < 4) {
     ui.error('Juice needs an action and a file. (juice action file)');
