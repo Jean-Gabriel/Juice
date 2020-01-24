@@ -27,11 +27,19 @@ export class Token {
         return this.value;
     }
 
+    public getLexeme() {
+        return this.lexeme;
+    }
+
     public getPosition() {
         return this.position;
     }
 
     public toString(): string {
-            return `Token: ${this.type}, ${this.lexeme} ,${this.value}, at position: ${this.position.toString()}.`;
+        if(this.value) {
+            return `Token: ${this.type}, ${this.lexeme}, ${this.value}, at position: ${this.position.toString()}.`;
+        }
+
+        return `Token: ${this.type}, ${this.lexeme}, at position: ${this.position.toString()}.`;
     }
 }

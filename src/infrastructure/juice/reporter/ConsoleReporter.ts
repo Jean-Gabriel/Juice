@@ -1,15 +1,11 @@
-import {UI} from "../../domain/juice/UI";
+import {Reporter} from "../../../domain/juice/Reporter";
 
-export class ConsoleUI implements UI {
-    private readonly prefix = "[juice]:";
+export class ConsoleReporter implements Reporter {
+    private readonly prefix = "[Juice]:";
     private readonly errorPrefix = 'Error:';
 
     error(message?: any, ...optionalParams: any[]): void {
-        if(optionalParams.length != 0) {
-            this.print(this.errorPrefix, message, optionalParams);
-        } else {
-            this.print(this.errorPrefix, message);
-        }
+        this.print(this.errorPrefix, message, ...optionalParams);
     }
 
     print(message?: any, ...optionalParams: any[]): void {

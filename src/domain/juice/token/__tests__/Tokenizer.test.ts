@@ -4,14 +4,15 @@ import {StringReader} from "../../../utils/StringReader";
 import {MockToken} from "../../../../mock/Token";
 import {Token} from "../Token";
 import {TokenType} from "../TokenType";
+import {Reporter} from "../../Reporter";
 
 describe('Tokenizer', () => {
     describe('when encountering new line character', () => {
         it('should increment line counter', () => {
             const content = '\n';
             const expectedPosition = new Point(2, 0);
-            const reader = new StringReader(content);
-            const tokenizer = new Tokenizer(reader);
+            const reader = provideStringReaderFor(content);
+            const tokenizer = new Tokenizer(reader, provideReporter());
 
             tokenizer.tokenize();
 
@@ -340,7 +341,30 @@ describe('Tokenizer', () => {
         expect(tokens).toEqual(expectedTokens);
     });
 
+    it('should call reporter on error', () => {
+        const content = '"fail';
+        const reporter = provideReporter();
+        const tokenizer = new Tokenizer(provideStringReaderFor(content), reporter);
+
+        expect(() => tokenizer.tokenize()).toThrowError();
+        expect(reporter.error).toHaveBeenCalledTimes(1);
+        expect(reporter.print).toHaveBeenCalledTimes(1);
+    });
+
+    function provideReporter() {
+        const reporter: Reporter = {
+            error: jest.fn(),
+            print: jest.fn(),
+        };
+
+        return reporter;
+    }
+
+    function provideStringReaderFor(content: string) {
+        return new StringReader(content);
+    }
+
     function provideTokenizerFor(content: string) {
-        return new Tokenizer(new StringReader(content));
+        return new Tokenizer(provideStringReaderFor(content), provideReporter());
     }
 });

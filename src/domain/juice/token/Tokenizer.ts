@@ -3,16 +3,18 @@ import {StringReader} from "../../utils/StringReader";
 import {TokenType} from "./TokenType";
 import {isAlpha, isAlphaNumeric, isDigit} from "../../utils/AlphaNumeric";
 import {keywords} from "./Keywords";
+import {Reporter} from "../Reporter";
 
 export class Tokenizer {
+    private shouldTerminate = false;
     private tokens: Token[] = [];
 
-    constructor(private reader: StringReader) {}
+    constructor(private reader: StringReader, private reporter: Reporter) {}
 
     tokenize(): Token[] {
         let char = '';
 
-        while (!this.reader.isAtEnd()) {
+        while (!this.reader.isAtEnd() && !this.shouldTerminate) {
             this.reader.fixStartPosition();
             char = this.reader.advance();
 
@@ -57,11 +59,14 @@ export class Tokenizer {
             }
         }
 
-        return this.tokens;
+        return this.shouldTerminate ? [] : this.tokens;
     }
 
     private report(error: string) {
-        throw new Error(`${error} occurred at position: ${this.reader.getCoordinates()}`);
+        this.reporter.error(`${error} occurred at position: ${this.reader.getCoordinates()}`);
+        this.reporter.print(`You might want to review: \n${this.currentPositionInContent()}`);
+
+        this.shouldTerminate = true;
     }
 
     private addIdentifierToken() {
@@ -103,5 +108,13 @@ export class Tokenizer {
 
     private addToken(type: TokenType, value: string) {
         this.tokens.push(new Token(type, this.reader.retrieve(), value, this.reader.getCoordinates()));
+    }
+
+    private currentPositionInContent() {
+        if(!this.tokens.length) {
+            return this.reader.retrieve();
+        }
+
+        return `${this.tokens[this.tokens.length - 1].getLexeme()} ${this.reader.retrieve()}`;
     }
 }
