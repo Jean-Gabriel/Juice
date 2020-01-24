@@ -6,8 +6,15 @@
   "scripts": {
     "build": "tsc",
     "serve": "tsc && node dist/index.js",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "jest"
   },
   "author": "Jean-Gabriel Doyon",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^24.9.0",
+    "jest": "^25.1.0",
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.5"
+  }
 }

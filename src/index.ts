@@ -1,17 +1,17 @@
 import {Action} from "./domain/Action";
-import {DirectoryFileManager} from "./infrastructure/DirectoryFileManager";
-import {ConsoleUI} from "./infrastructure/Juice/ConsoleUI";
-import {Tokenizer} from "./domain/Juice/Token/Tokenizer";
-import {StringLexemeReader} from "./domain/Juice/utils/StringLexemeReader";
-import {UI} from "./domain/Juice/UI";
-import {FileManager} from "./domain/FileManager";
-import {Parser} from "./domain/Juice/Ast/Parser";
-import {TokenReader} from "./domain/Juice/Token/TokenReader";
+import {DirectoryFileManager} from "./infrastructure/directory/file/DirectoryFileManager";
+import {ConsoleUI} from "./infrastructure/juice/ConsoleUI";
+import {Tokenizer} from "./domain/juice/token/Tokenizer";
+import {StringReader} from "./domain/utils/StringReader";
+import {UI} from "./domain/juice/UI";
+import {FileManager} from "./domain/file/FileManager";
+import {Parser} from "./domain/juice/ast/Parser";
+import {TokenReader} from "./domain/juice/token/TokenReader";
 
 const ui: UI = new ConsoleUI();
 
 if(process.argv.length < 4) {
-    ui.error('Juice needs an action and a file. (juice action file)');
+    ui.error('juice needs an action and a file. (juice action file)');
     process.exit(1);
 }
 
@@ -19,10 +19,10 @@ const action = process.argv[2];
 const file = process.argv[3];
 
 const fileManager: FileManager = new DirectoryFileManager();
-const content = fileManager.open(__dirname, file);
+const content = fileManager.read(__dirname, file);
 
 if(action == Action.TOKENIZE) {
-    const tokenizer = new Tokenizer(new StringLexemeReader(content));
+    const tokenizer = new Tokenizer(new StringReader(content));
     try {
         const tokens = tokenizer.tokenize();
 
@@ -36,7 +36,7 @@ if(action == Action.TOKENIZE) {
 
 if(action == Action.PARSE) {
     try {
-        const tokenizer = new Tokenizer(new StringLexemeReader(content));
+        const tokenizer = new Tokenizer(new StringReader(content));
         const tokens = tokenizer.tokenize();
 
         const parser = new Parser(new TokenReader(tokens));
