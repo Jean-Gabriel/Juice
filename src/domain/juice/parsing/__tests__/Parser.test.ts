@@ -11,6 +11,14 @@ import {Program} from "../ast/declaration/Program";
 import {BinaryExpression} from "../ast/expression/expressions/BinaryExpression";
 import {LiteralExpression} from "../ast/expression/expressions/LiteralExpression";
 import {UnaryExpression} from "../ast/expression/expressions/UnaryExpression";
+import {ObjectDeclaration} from "../ast/declaration/declaration/ObjectDeclaration";
+import {TypedDeclaration} from "../ast/declaration/declaration/TypedDeclaration";
+import {JuiceType} from "../../types/JuiceTypes";
+import {FunctionDeclaration} from "../ast/declaration/declaration/FunctionDeclaration";
+import {ReturnStatement} from "../ast/statement/statements/ReturnStatement";
+import {PrintStatement} from "../ast/statement/statements/PrintStatement";
+import {Assignment} from "../ast/Assignment";
+import {ObjectInstantiation} from "../ast/expression/expressions/ObjectInstantiation";
 
 describe('Parser', () => {
     let reporter = provideTestReporter();
@@ -60,8 +68,253 @@ describe('Parser', () => {
             ]));
         });
 
-        it('should not parse val declaration without equality', () => {
+        it('should parse val declaration with object instantiation', () => {
+            expectAstEqual('val test = new Person', new Program([
+                new ValDeclaration('test',
+                    new ObjectInstantiation('Person'))
+            ]));
+        });
 
+        it('should not parse val declaration without equality', () => {
+            expectError('val test');
+        });
+    });
+
+    describe('when encountering an object declaration', () => {
+        it('should parse object without attribute', () => {
+            expectAstEqual('obj test {}', new Program([
+                new ObjectDeclaration('test', []),
+            ]));
+        });
+
+        it('should parse object with typed attributes', () => {
+            expectAstEqual('obj test { string str uint num boolean bool }' , new Program([
+                    new ObjectDeclaration('test', [
+                        new TypedDeclaration('str', JuiceType.STRING),
+                        new TypedDeclaration('num', JuiceType.UINT),
+                        new TypedDeclaration('bool', JuiceType.BOOLEAN),
+                    ])
+            ]));
+        });
+
+        it('should not parse object without left bracket', () => {
+            expectError('obj test }');
+        });
+
+        it('shoud not parse object without right bracket', () => {
+            expectError('obj test {')
+        });
+
+        it('should not parse object without bracket', () => {
+            expectError('obj test');
+        });
+    });
+
+    describe('when encountering a function declaration', () => {
+        it('should parse function declaration with empty body', () => {
+            expectAstEqual('fun test() {}', new Program([
+                new FunctionDeclaration('test', []),
+            ]));
+        });
+
+        it('should parse function declaration with one argument', () => {
+            expectAstEqual('fun test(uint num) {}', new Program([
+                new FunctionDeclaration('test', [
+                    new TypedDeclaration('num', JuiceType.UINT),
+                ]),
+            ]));
+        });
+
+        it('should parse function declaration with multiple arguments', () => {
+           expectAstEqual('fun test(string str, boolean bool) {}', new Program([
+               new FunctionDeclaration('test', [
+                   new TypedDeclaration('str', JuiceType.STRING),
+                   new TypedDeclaration('bool', JuiceType.BOOLEAN),
+               ]),
+           ]));
+        });
+
+        it('should parse function declaration with body', () => {
+            expectAstEqual('fun test() { val x = 1 return x }', new Program([
+                new FunctionDeclaration('test', [], [
+                    new ValDeclaration('x', new LiteralExpression('1')),
+                    new ReturnStatement(new Accessor('x')),
+                ]),
+            ]))
+        });
+
+        it('should parse function body that return an expression', () => {
+            expectAstEqual('fun test() { return 2 + 2 }', new Program([
+                new FunctionDeclaration('test', [], [
+                    new ReturnStatement(new BinaryExpression(
+                        new LiteralExpression('2'), '+',
+                        new LiteralExpression('2')
+                    )),
+                ]),
+            ]));
+        });
+
+        it('should not parse function with missing right bracket', () => {
+            expectError('fun test() {');
+        });
+
+
+        it('should not parse function with missing left bracket', () => {
+            expectError('fun test() }');
+        });
+
+
+        it('should not parse function with missing brackets', () => {
+            expectError('fun test()');
+        });
+
+        it('should not parse function on missing left parenthesis', () => {
+            expectError('fun test) {}');
+        });
+
+        it('should not parse function on missing right parenthesis', () => {
+            expectError('fun test( {}');
+        });
+
+        it('should not parse function without parenthesis', () => {
+            expectError('fun test {}');
+        });
+
+        it('should not parse function without identifier', () => {
+            expectError('fun () {}');
+        });
+    });
+
+    describe('when encountering a print statement', () => {
+        it('should parse with function call expression', () => {
+            expectAstEqual('print(returnOne())', new Program([
+                new PrintStatement(new FunctionCall(new Accessor('returnOne'))),
+            ]));
+        });
+
+        it('should parse print with object accessor', () => {
+            expectAstEqual('print(object.value)', new Program([
+                new PrintStatement(new Accessor('object', new Accessor('value'))),
+            ]));
+        });
+
+        it('should parse print statement with mathematical expression', () => {
+            expectAstEqual('print(2 + 2 * 2)', new Program([
+                new PrintStatement(new BinaryExpression(
+                    new LiteralExpression('2'), '+',
+                    new BinaryExpression(
+                        new LiteralExpression('2'), '*',
+                        new LiteralExpression('2')
+                    )
+                )),
+            ]));
+        });
+
+        it('should parse empty print statement', () => {
+            expectAstEqual('print()', new Program([
+                new PrintStatement(new LiteralExpression(null)),
+            ]));
+        });
+
+        it('should not parse print statement without closing parenthesis', () => {
+            expectError('print(');
+        });
+
+        it('should not parse print statement without opening parenthesis', () => {
+            expectError('print)');
+        });
+
+        it('should not parse print statement without parenthesis', () => {
+            expectError('print')
+        });
+    });
+
+    describe('when encountering an identifier', () => {
+        describe('when it is a function call', () => {
+            it('should parse function call', () => {
+                expectAstEqual('call()', new Program([
+                    new FunctionCall(new Accessor('call')),
+                ]));
+            });
+
+            it('should parse function call with one argument', () => {
+                expectAstEqual('call(i)', new Program([
+                    new FunctionCall(new Accessor('call'), [
+                        new Accessor('i'),
+                    ]),
+                ]));
+            });
+
+            it('should parse function call with multiple arguments', () => {
+                expectAstEqual('call(i, b)', new Program([
+                    new FunctionCall(new Accessor('call'), [
+                        new Accessor('i'),
+                        new Accessor('b'),
+                    ]),
+                ]));
+            });
+
+            it('should not parse function with multiple argument but no comma', () => {
+                expectError('call(i j)');
+            });
+
+            it('should not parse function call with missing left parenthesis', () => {
+                expectError('call)');
+            });
+
+
+            it('should not parse function call with missing right parenthesis', () => {
+                expectError('call(');
+            });
+        });
+
+        describe('when it is an assignment', () => {
+            it('should parse assignment with accessor', () => {
+                expectAstEqual('test = someNumber', new Program([
+                    new Assignment(
+                        new Accessor('test'),
+                        new Accessor('someNumber'),
+                    ),
+                ]));
+            });
+
+            it('should parse assignment with expression', () => {
+                expectAstEqual('test = 3 + 5', new Program([
+                    new Assignment(
+                        new Accessor('test'),
+                        new BinaryExpression(
+                            new LiteralExpression('3'), '+',
+                            new LiteralExpression('5')
+                        ),
+                    ),
+                ]));
+            });
+
+            it('should parse assignment with function call', () => {
+                expectAstEqual('test = returnOne()', new Program([
+                    new Assignment(
+                        new Accessor('test'),
+                        new FunctionCall(new Accessor('returnOne'))
+                    ),
+                ]));
+            });
+
+            it('should parse object attribute assignment with expression', () => {
+                expectAstEqual('object.value = 1', new Program([
+                    new Assignment(
+                        new Accessor('object', new Accessor('value')),
+                        new LiteralExpression('1'),
+                    ),
+                ]));
+            });
+
+            it('should not parse object without expression after equal', () => {
+                expectError('test =');
+            });
+
+            it('should not parse object without equal', () => {
+                expectError('test 1');
+            });
         });
     });
 
@@ -72,9 +325,19 @@ describe('Parser', () => {
         expect(ast).toEqual(expectedAst);
     }
 
+    function expectError(content: string) {
+        const parser = provideParserFor(content);
+
+        const ast = parser.parse();
+
+        expect(ast).toEqual(new Program());
+        expect(reporter.error).toHaveBeenCalledTimes(2);
+        expect(reporter.print).toHaveBeenCalledTimes(1);
+    }
+
     function provideParserFor(content: string) {
         const tokens = tokenize(content);
-        return new Parser(provideTokenReaderFor(tokens));
+        return new Parser(provideTokenReaderFor(tokens), reporter);
     }
 
     function provideTokenReaderFor(tokens: Token[]) {

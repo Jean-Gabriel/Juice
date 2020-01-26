@@ -10,7 +10,7 @@ funBody                     ::= "{" ( statement | valDecl )* "}"
 returnStmt                  ::= "return" | expression ";"
 objDecl                     ::= "obj" IDENTIFIER "{" ( typedDecl ";" )*  "}"
 typedDecl                   ::= ( NUMBER_TYPE | STRING_TYPE | BOOLEAN_TYPE ) IDENTIFIER
-valDecl                     ::= "val" IDENTIFIER "=" ( expression | objInstantiation ) ";"
+valDecl                     ::= "val" IDENTIFIER "=" ( expression | objInstantiation )
 objInstantiation            ::= "new" IDENTIFIER
 statement                   ::= printStmt
                              | returnStmt
@@ -18,8 +18,7 @@ statement                   ::= printStmt
 
 printStmt                   ::= "print" "(" expression ")" ";"
 expression                  ::= assignment
-assignment                  ::= accessor "=" assignment
-                             | equality
+assignment                  ::= accessor "=" ( accessor | equality )
 equality                    ::= comparison ( ( "!=" | "==" ) comparison )*
 comparison                  ::= addition ( ( ">" | ">=" | "<" | "<=" ) addition )*
 addition                    ::= multiplication ( ( "-" | "+" ) multiplication )*

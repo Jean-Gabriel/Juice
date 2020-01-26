@@ -237,7 +237,7 @@ describe('Tokenizer', () => {
         const tokens = tokenizer.tokenize();
 
         expect(tokens.length).toEqual(0);
-        expect(reporter.error).toHaveBeenCalledTimes(1);
+        expect(reporter.error).toHaveBeenCalledTimes(2);
         expect(reporter.print).toHaveBeenCalledTimes(1);
     });
 

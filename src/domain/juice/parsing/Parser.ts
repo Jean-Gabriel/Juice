@@ -17,6 +17,7 @@ import {Accessor} from "./ast/expression/expressions/Accessor";
 import {Assignment} from "./ast/Assignment";
 import {FunctionCall} from "./ast/FunctionCall";
 import {TypedDeclaration} from "./ast/declaration/declaration/TypedDeclaration";
+import {Reporter} from "../Reporter";
 
 type Separator = TokenType.COMMA;
 
@@ -26,36 +27,46 @@ export class Parser {
     private readonly ARGUMENT_SEPARATOR = TokenType.COMMA;
     private readonly ARGUMENT_END = TokenType.RIGHT_PARENTHESIS;
 
-    constructor(private tokenReader: TokenReader) {}
+    constructor(private tokenReader: TokenReader, private reporter: Reporter) {}
 
     parse() {
         const program = new Program();
-        while(!this.tokenReader.isAtEnd()) {
-            switch (this.tokenReader.current().getType()) {
-                case TokenType.OBJECT:
-                    program.add(this.parseObjectDeclaration());
-                    break;
-                case TokenType.VAL:
-                    program.add(this.parseValDeclaration());
-                    break;
-                case TokenType.FUNCTION:
-                    program.add(this.parseFunctionDeclaration());
-                    break;
-                case TokenType.PRINT:
-                    program.add(this.parsePrintStatement());
-                    break;
-                case TokenType.IDENTIFIER:
-                    program.add(this.parseExpression());
-                    break;
-                default:
-                    this.report("Undefined statement");
+        try {
+            while(!this.tokenReader.isAtEnd()) {
+                switch (this.tokenReader.current().getType()) {
+                    case TokenType.OBJECT:
+                        program.add(this.parseObjectDeclaration());
+                        break;
+                    case TokenType.VAL:
+                        program.add(this.parseValDeclaration());
+                        break;
+                    case TokenType.FUNCTION:
+                        program.add(this.parseFunctionDeclaration());
+                        break;
+                    case TokenType.PRINT:
+                        program.add(this.parsePrintStatement());
+                        break;
+                    case TokenType.IDENTIFIER:
+                        program.add(this.parseExpression());
+                        break;
+                    default:
+                        this.report("Undefined statement");
+                }
             }
+
+        } catch (e) {
+            return new Program();
         }
+
         return program;
     }
 
     private report(error: string) {
-        throw new Error(`${error} occurred for: ${this.tokenReader.current().toString()}`);
+        this.reporter.error('Parser error.');
+        this.reporter.error(`${error} occurred for: ${this.tokenReader.current().toString()}`);
+        this.reporter.print(`You might want to review: "${this.currentParsingContext()}"`);
+
+        throw new Error(error);
     }
 
     private parseFunctionDeclaration() {
@@ -265,10 +276,6 @@ export class Parser {
     }
 
     private parsePrimary() {
-        if(this.tokenReader.doTokenTypeMatch(TokenType.NULL).result()) {
-            return new LiteralExpression(null);
-        }
-
         if(this.tokenReader.doTokenTypeMatchAny(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN).result()) {
             return new LiteralExpression(this.tokenReader.previous().getValue());
         }
@@ -277,7 +284,7 @@ export class Parser {
             return this.parseAccessor();
         }
 
-        if(this.tokenReader.doTokenTypeMatch(TokenType.LEFT_PARENTHESIS).result()) {
+        if(this.tokenReader.doTokenTypeMatch(TokenType.LEFT_PARENTHESIS).result() && !this.tokenReader.isAtEnd()) {
             const expression = this.parseExpression();
 
             if(!this.tokenReader.doTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).result()) {
@@ -287,13 +294,19 @@ export class Parser {
             return expression
         }
 
+
+        if(this.tokenReader.doTokenTypeMatchAny(TokenType.NULL, TokenType.RIGHT_PARENTHESIS).result()) {
+            return new LiteralExpression(null);
+        }
+
+
         this.report("Undefined primary")
     }
 
     private parseFunctionCallArguments() {
         const args: Expression[] = [];
         while(!this.tokenReader.doTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).result()) {
-            if(!this.tokenReader.doTokenTypeMatch(TokenType.COMMA) && args.length) {
+            if(!this.tokenReader.doTokenTypeMatch(TokenType.COMMA).result() && args.length) {
                 this.report("Expected comma after argument");
             }
 
@@ -319,11 +332,15 @@ export class Parser {
     private parseTypedValueUntil(end: TokenType, separator?: Separator) {
         const typedValues: TypedDeclaration[] = [];
 
-        while(!this.tokenReader.doTokenTypeMatch(end)) {
+        while(!this.tokenReader.doTokenTypeMatch(end).result()) {
             if(separator && typedValues.length) {
                 if(!this.tokenReader.doTokenTypeMatch(separator).result()) {
                     this.report("Typed declaration expects a separator");
                 }
+            }
+
+            if(this.tokenReader.isAtEnd()) {
+                this.report('No typed declaration end');
             }
 
             if(!this.tokenReader.doTokenTypeMatchAny(TokenType.UINT_TYPE, TokenType.STRING_TYPE, TokenType.BOOLEAN_TYPE).result()) {
@@ -339,5 +356,13 @@ export class Parser {
         }
 
         return typedValues;
+    }
+
+    private currentParsingContext() {
+        if(this.tokenReader.isAtStart()) {
+            return `[ERROR] ${this.tokenReader.advance().getLexeme()}${this.tokenReader.isAtEnd() ? '' : ` ${this.tokenReader.current().getLexeme()}`}`;
+        }
+
+        return `${this.tokenReader.previous().getLexeme()} [ERROR] ${this.tokenReader.advance().getLexeme()}${this.tokenReader.isAtEnd() ? '' : ` ${this.tokenReader.current().getLexeme()}`}`;
     }
 }

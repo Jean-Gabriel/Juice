@@ -31,15 +31,11 @@ if(action == Action.TOKENIZE) {
 }
 
 if(action == Action.PARSE) {
-    try {
-        const tokenizer = new Tokenizer(new StringReader(content), reporter);
-        const tokens = tokenizer.tokenize();
+    const tokenizer = new Tokenizer(new StringReader(content), reporter);
+    const tokens = tokenizer.tokenize();
 
-        const parser = new Parser(new TokenReader(tokens));
-        const program = parser.parse() as any;
+    const parser = new Parser(new TokenReader(tokens), reporter);
+    const program = parser.parse() as any;
 
-        reporter.print(program.content);
-    } catch (error) {
-        reporter.print(error.toString());
-    }
+    reporter.print(program.content ? program.content : '');
 }

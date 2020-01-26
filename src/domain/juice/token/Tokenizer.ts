@@ -63,6 +63,7 @@ export class Tokenizer {
     }
 
     private report(error: string) {
+        this.reporter.error('Tokenizer error.');
         this.reporter.error(`${error} occurred at position: ${this.reader.getCoordinates()}`);
         this.reporter.print(`You might want to review: \n${this.currentPositionInContent()}`);
 

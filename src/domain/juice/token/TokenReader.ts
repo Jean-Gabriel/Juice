@@ -59,4 +59,8 @@ export class TokenReader {
     isAtEnd() {
         return this.currentToken == this.tokens.length;
     }
+
+    isAtStart() {
+        return this.currentToken == 0;
+    }
 }
