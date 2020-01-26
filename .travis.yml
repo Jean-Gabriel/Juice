@@ -1,9 +1,18 @@
-language: nodejs
+language: node_js
+
+node_js:
+  - stable
 
 before_script:
-  - npm install
+  - npm install @types/node --save-dev
+  - yarn
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
 
 jobs:
   include:
     - stage: "Run tests"
-      script: npm run test
+      script: yarn test
