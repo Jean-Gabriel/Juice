@@ -4,15 +4,30 @@ import {StringReader} from "../../../utils/StringReader";
 import {MockToken} from "../../../../mock/Token";
 import {Token} from "../Token";
 import {TokenType} from "../TokenType";
-import {Reporter} from "../../Reporter";
+import {provideTestReporter} from "../../../../infrastructure/juice/reporter/TestReporter";
 
 describe('Tokenizer', () => {
+    let reporter = provideTestReporter();
+
+    function provideStringReaderFor(content: string) {
+        return new StringReader(content);
+    }
+
+    function provideTokenizerFor(content: string) {
+        return new Tokenizer(provideStringReaderFor(content), reporter);
+    }
+
+    beforeEach(() => {
+        reporter = provideTestReporter();
+
+    });
+
     describe('when encountering new line character', () => {
         it('should increment line counter', () => {
             const content = '\n';
             const expectedPosition = new Point(2, 0);
             const reader = provideStringReaderFor(content);
-            const tokenizer = new Tokenizer(reader, provideReporter());
+            const tokenizer = new Tokenizer(reader, reporter);
 
             tokenizer.tokenize();
 
@@ -22,280 +37,170 @@ describe('Tokenizer', () => {
 
     describe('when encountering a comment character', () => {
         it('should ignore everything after until next line', () => {
-            const content = '# should be ignored \n a';
-            const tokenizer = provideTokenizerFor(content);
-            const expectedTokens = [ new Token(TokenType.IDENTIFIER, 'a', '', new Point(1,22)) ];
-
-            const tokens = tokenizer.tokenize();
-
-            expect(tokens).toEqual(expectedTokens);
+            expectTokenEqual('# should be ignored \n a', [
+                new MockToken(TokenType.IDENTIFIER).withLexeme('a').withPosition(new Point(1, 22)).get(),
+            ]);
         });
     });
 
     it('should tokenize left parenthesis', () => {
-        const content = '(';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.LEFT_PARENTHESIS).withLexeme('(').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('(', [
+            new MockToken(TokenType.LEFT_PARENTHESIS).withLexeme("(").get(),
+        ]);
     });
 
     it('should tokenize right parenthesis', () => {
-        const content = ')';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.RIGHT_PARENTHESIS).withLexeme(')').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual(')', [
+            new MockToken(TokenType.RIGHT_PARENTHESIS).withLexeme(")").get(),
+        ]);
     });
 
     it('should tokenize left bracket', () => {
-        const content = '{';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.LEFT_BRACKET).withLexeme('{').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('{', [
+            new MockToken(TokenType.LEFT_BRACKET).withLexeme("{").get(),
+        ]);
     });
 
     it('should tokenize right bracket', () => {
-        const content = '}';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.RIGHT_BRACKET).withLexeme('}').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('}', [
+            new MockToken(TokenType.RIGHT_BRACKET).withLexeme("}").get(),
+        ]);
     });
 
     it('should tokenize minus', () => {
-        const content = '-';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.MINUS).withLexeme('-').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('-', [
+            new MockToken(TokenType.MINUS).withLexeme("-").get(),
+        ]);
     });
 
     it('should tokenize plus', () => {
-        const content = '+';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.PLUS).withLexeme('+').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('+', [
+            new MockToken(TokenType.PLUS).withLexeme("+").get(),
+        ]);
     });
 
     it('should tokenize star', () => {
-        const content = '*';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.STAR).withLexeme('*').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('*', [
+            new MockToken(TokenType.STAR).withLexeme("*").get(),
+        ]);
     });
 
     it('should tokenize modulo', () => {
-        const content = '%';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.MODULO).withLexeme('%').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('%', [
+            new MockToken(TokenType.MODULO).withLexeme("%").get(),
+        ]);
     });
 
     it('should tokenize slash', () => {
-        const content = '/';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.SLASH).withLexeme('/').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('/', [
+            new MockToken(TokenType.SLASH).withLexeme("/").get(),
+        ]);
     });
 
     it('should tokenize dot', () => {
-        const content = '.';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.DOT).withLexeme('.').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('.', [
+            new MockToken(TokenType.DOT).withLexeme(".").get(),
+        ]);
     });
 
     it('should tokenize comma', () => {
-        const content = ',';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.COMMA).withLexeme(',').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual(',', [
+            new MockToken(TokenType.COMMA).withLexeme(",").get(),
+        ]);
     });
 
     it('should tokenize bang', () => {
-        const content = '!';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.BANG).withLexeme('!').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('!', [
+            new MockToken(TokenType.BANG).withLexeme("!").get(),
+        ]);
     });
 
     it('should tokenize bang equal', () => {
-        const content = '!=';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.BANG_EQUAL).withLexeme('!=').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('!=', [
+            new MockToken(TokenType.BANG_EQUAL).withLexeme("!=").get(),
+        ]);
     });
 
     it('should tokenize equal', () => {
-        const content = '=';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.EQUAL).withLexeme('=').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('=', [
+            new MockToken(TokenType.EQUAL).withLexeme('=').get(),
+        ]);
     });
 
     it('should tokenize equal equal', () => {
-        const content = '==';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.EQUAL_EQUAL).withLexeme('==').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('==', [
+            new MockToken(TokenType.EQUAL_EQUAL).withLexeme("==").get(),
+        ]);
     });
 
     it('should tokenize greater sign', () => {
-        const content = '>';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.GREATER).withLexeme('>').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('>', [
+            new MockToken(TokenType.GREATER).withLexeme(">").get(),
+        ]);
     });
 
     it('should tokenize less sign', () => {
-        const content = '<';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.LESS).withLexeme('<').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('<', [
+            new MockToken(TokenType.LESS).withLexeme("<").get(),
+        ]);
     });
 
     it('should tokenize greater equal sign', () => {
-        const content = '>=';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.GREATER_EQUAL).withLexeme('>=').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('>=', [
+            new MockToken(TokenType.GREATER_EQUAL).withLexeme(">=").get(),
+        ]);
     });
 
     it('should tokenize less equal sign', () => {
-        const content = '<=';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.LESS_EQUAL).withLexeme('<=').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('<=', [
+            new MockToken(TokenType.LESS_EQUAL).withLexeme("<=").get(),
+        ]);
     });
 
     it('should tokenize string ', () => {
-        const content = '"tiktok"';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.STRING).withLexeme('"tiktok"').withValue('tiktok').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('"tiktok"', [
+            new MockToken(TokenType.STRING).withLexeme('"tiktok"').withValue('tiktok').get()
+        ]);
     });
 
     it('should tokenize uint', () => {
-        const content = '2';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.NUMBER).withLexeme('2').withValue('2').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('2', [
+            new MockToken(TokenType.NUMBER).withLexeme('2').withValue('2').get()
+        ]);
     });
 
     it('should tokenize "false" value', () => {
-        const content = 'false';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.BOOLEAN).withLexeme('false').withValue('false').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('false', [
+            new MockToken(TokenType.BOOLEAN).withLexeme('false').withValue('false').get()
+        ]);
     });
 
     it('should tokenize "true" value', () => {
-        const content = 'true';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken(TokenType.BOOLEAN).withLexeme('true').withValue('true').get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('true', [
+            new MockToken(TokenType.BOOLEAN).withLexeme('true').withValue('true').get()
+        ]);
     });
 
     it('should tokenize variable declaration', () => {
-        const content = 'val name = "John"';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [
+        expectTokenEqual('val name = "John"', [
             new MockToken().withType(TokenType.VAL).withLexeme('val').withPosition(new Point(1,0)).get(),
             new MockToken().withType(TokenType.IDENTIFIER).withLexeme('name').withPosition(new Point(1,4)).get(),
             new MockToken().withType(TokenType.EQUAL).withLexeme('=').withPosition(new Point(1,9)).get(),
             new MockToken().withType(TokenType.STRING).withLexeme('"John"').withValue("John").withPosition(new Point(1, 11)).get(),
-        ];
-
-        const tokens = tokenizer.tokenize();
-
-        expectedTokens.forEach(token => expect(tokens).toContainEqual(token));
+        ]);
     });
 
     it('should tokenize object declaration', () => {
-        const content = 'obj Person {}';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [
+        expectTokenEqual('obj Person {}', [
             new MockToken().withType(TokenType.OBJECT).withLexeme('obj').withPosition(new Point(1, 0)).get(),
             new MockToken().withType(TokenType.IDENTIFIER).withLexeme('Person').withPosition(new Point(1, 4)).get(),
             new MockToken().withType(TokenType.LEFT_BRACKET).withLexeme('{').withPosition(new Point(1, 11)).get(),
             new MockToken().withType(TokenType.RIGHT_BRACKET).withLexeme('}').withPosition(new Point(1, 12)).get(),
-        ];
-
-        const tokens = tokenizer.tokenize();
-
-        expectedTokens.forEach(token => expect(tokens).toContainEqual(token));
+        ]);
     });
 
     it('should tokenize function declaration', () => {
-        const content = 'fun returnTrue() { return true }';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [
+        expectTokenEqual('fun returnTrue() { return true }', [
             new MockToken().withType(TokenType.FUNCTION).withLexeme('fun').withPosition(new Point(1, 0)).get(),
             new MockToken().withType(TokenType.IDENTIFIER).withLexeme('returnTrue').withPosition(new Point(1, 4)).get(),
             new MockToken().withType(TokenType.LEFT_PARENTHESIS).withLexeme('(').withPosition(new Point(1, 14)).get(),
@@ -304,67 +209,43 @@ describe('Tokenizer', () => {
             new MockToken().withType(TokenType.RETURN).withLexeme('return').withPosition(new Point(1, 19)).get(),
             new MockToken().withType(TokenType.BOOLEAN).withLexeme('true').withValue('true').withPosition(new Point(1, 26)).get(),
             new MockToken().withType(TokenType.RIGHT_BRACKET).withLexeme('}').withPosition(new Point(1, 31)).get(),
-        ];
-
-        const tokens = tokenizer.tokenize();
-
-        expectedTokens.forEach(token => expect(tokens).toContainEqual(token));
+        ]);
     });
 
     it('should tokenize uint type', () => {
-        const content = 'uint';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken().withType(TokenType.UINT_TYPE).withLexeme('uint').withPosition(new Point(1, 0)).get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('uint', [
+            new MockToken().withType(TokenType.UINT_TYPE).withLexeme('uint').withPosition(new Point(1, 0)).get()
+        ]);
     });
 
     it('should tokenize string type', () => {
-        const content = 'string';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken().withType(TokenType.STRING_TYPE).withLexeme('string').withPosition(new Point(1, 0)).get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('string', [
+            new MockToken().withType(TokenType.STRING_TYPE).withLexeme('string').withPosition(new Point(1, 0)).get()
+        ]);
     });
 
     it('should tokenize boolean type', () => {
-        const content = 'boolean';
-        const tokenizer = provideTokenizerFor(content);
-        const expectedTokens = [ new MockToken().withType(TokenType.BOOLEAN_TYPE).withLexeme('boolean').withPosition(new Point(1, 0)).get() ];
-
-        const tokens = tokenizer.tokenize();
-
-        expect(tokens).toEqual(expectedTokens);
+        expectTokenEqual('boolean', [
+            new MockToken().withType(TokenType.BOOLEAN_TYPE).withLexeme('boolean').withPosition(new Point(1, 0)).get()
+        ]);
     });
 
     it('should call reporter on error', () => {
         const content = '"fail';
-        const reporter = provideReporter();
-        const tokenizer = new Tokenizer(provideStringReaderFor(content), reporter);
+        const tokenizer = provideTokenizerFor(content);
 
-        expect(() => tokenizer.tokenize()).toThrowError();
+        const tokens = tokenizer.tokenize();
+
+        expect(tokens.length).toEqual(0);
         expect(reporter.error).toHaveBeenCalledTimes(1);
         expect(reporter.print).toHaveBeenCalledTimes(1);
     });
 
-    function provideReporter() {
-        const reporter: Reporter = {
-            error: jest.fn(),
-            print: jest.fn(),
-        };
+    function expectTokenEqual(content: string, expectedTokens: Token[]) {
+        const tokenizer = provideTokenizerFor(content);
 
-        return reporter;
-    }
+        const tokens = tokenizer.tokenize();
 
-    function provideStringReaderFor(content: string) {
-        return new StringReader(content);
-    }
-
-    function provideTokenizerFor(content: string) {
-        return new Tokenizer(provideStringReaderFor(content), provideReporter());
+        expectedTokens.forEach(token => expect(tokens).toContainEqual(token));
     }
 });

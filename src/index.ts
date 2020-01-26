@@ -5,7 +5,7 @@ import {Tokenizer} from "./domain/juice/token/Tokenizer";
 import {StringReader} from "./domain/utils/StringReader";
 import {Reporter} from "./domain/juice/Reporter";
 import {FileManager} from "./domain/file/FileManager";
-import {Parser} from "./domain/juice/ast/Parser";
+import {Parser} from "./domain/juice/parsing/Parser";
 import {TokenReader} from "./domain/juice/token/TokenReader";
 
 const reporter: Reporter = new ConsoleReporter();

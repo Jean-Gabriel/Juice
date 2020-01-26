@@ -20,20 +20,12 @@ describe('Token', () => {
            expect(hasOneOfGivenType).toBeFalsy();
        });
 
-       it('should have type', () => {
+       it('should have one type', () => {
            const token = new MockToken().withType(TokenType.BOOLEAN_TYPE).get();
 
-           const hasOneOfGivenType = token.hasType(TokenType.BOOLEAN_TYPE);
+           const hasOneOfGivenType = token.hasAnyType(TokenType.BOOLEAN_TYPE);
 
            expect(hasOneOfGivenType).toBeTruthy();
-       });
-
-       it('should have type', () => {
-           const token = new MockToken().withType(TokenType.BOOLEAN_TYPE).get();
-
-           const hasOneOfGivenType = token.hasType(TokenType.NUMBER);
-
-           expect(hasOneOfGivenType).toBeFalsy();
        });
     });
 

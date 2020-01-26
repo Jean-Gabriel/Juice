@@ -11,10 +11,6 @@ export class Token {
         return types.includes(this.type);
     }
 
-    public hasType(type: TokenType) {
-        return this.type == type;
-    }
-
     public getType() {
         return this.type;
     }
