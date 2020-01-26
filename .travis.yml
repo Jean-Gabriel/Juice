@@ -1,0 +1,9 @@
+language: nodejs
+
+before_script:
+  - npm install
+
+jobs:
+  include:
+    - stage: "Run tests"
+      script: npm run test
