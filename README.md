@@ -1,8 +1,8 @@
 # Juice
-Juice is the name of the project/programming language for my [virtual machine](https://github.com/Jean-Gabriel/VirtualMachine).
+Juice is the name of the project/programming language for my [virtual machine](https://github.com/Jean-Gabriel/JuiceVM).
 
 ## Why
-After writing my [virtual machine](https://github.com/Jean-Gabriel/VirtualMachine), I figured out it would be nice if I could write a program in a human readable language, output it to bytecode and run it with the vm.
+After writing my [virtual machine](https://github.com/Jean-Gabriel/JuiceVM), I figured out it would be nice if I could write a program in a human readable language, output it to bytecode and run it with the vm.
 This project also represents a good challenge for me which is a motivating factor. 
 
 ## Roadmap
