@@ -71,15 +71,10 @@ export class Parser {
 
     private parseFunctionDeclaration() {
         this.tokenReader.advance();
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.IDENTIFIER).result()) {
-            this.report("Expected identifier after fun token");
-        }
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.IDENTIFIER).orElse(() => this.report("Expected identifier after fun token"));
         const identifier = this.tokenReader.previous().getValue();
 
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.LEFT_PARENTHESIS).result()) {
-            this.report("Expected left parenthesis after function identifier");
-        }
-
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.LEFT_PARENTHESIS).orElse(() => this.report("Expected left parenthesis after function identifier"));
         const args = this.parseTypedValueUntil(this.ARGUMENT_END, this.ARGUMENT_SEPARATOR);
         const body = this.parseFunctionBody();
 
@@ -88,12 +83,9 @@ export class Parser {
 
     private parseFunctionBody() {
         const body: Statement[] = [];
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.LEFT_BRACKET).orElse(() => this.report("Expected left bracket after function arguments"));
 
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.LEFT_BRACKET).result()) {
-            this.report("Expected left bracket after function arguments");
-        }
-
-        while(!this.tokenReader.doTokenTypeMatch(TokenType.RIGHT_BRACKET).result()) {
+        while(!this.tokenReader.consumeIfTokenTypeMatch(TokenType.RIGHT_BRACKET).doMatch()) {
             const statement = this.parseStatement();
             if(statement) {
                 body.push(statement);
@@ -127,15 +119,10 @@ export class Parser {
 
     private parseObjectDeclaration() {
         this.tokenReader.advance();
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.IDENTIFIER).result()) {
-            this.report("Expected identifier after obj token");
-        }
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.IDENTIFIER).orElse(() => this.report("Expected identifier after obj token"));
 
         const identifier = this.tokenReader.previous().getValue();
-
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.LEFT_BRACKET).result()) {
-            this.report("Expected left bracket after object identifier");
-        }
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.LEFT_BRACKET).orElse(() => this.report("Expected left bracket after object identifier"));
 
         const attributes = this.parseTypedValueUntil(this.ATTRIBUTE_END);
         return new ObjectDeclaration(identifier, attributes);
@@ -143,15 +130,10 @@ export class Parser {
 
     private parsePrintStatement() {
         this.tokenReader.advance();
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.LEFT_PARENTHESIS).result()) {
-            this.report("Expected left parenthesis after print");
-        }
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.LEFT_PARENTHESIS).orElse(() => this.report("Expected left parenthesis after print"));
 
         const expression = this.parseExpression();
-
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).result()) {
-            this.report("Expected right parenthesis after expression");
-        }
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).orElse(() => this.report("Expected right parenthesis after expression"));
 
         return new PrintStatement(expression);
     }
@@ -159,20 +141,14 @@ export class Parser {
     private parseValDeclaration() {
         this.tokenReader.advance();
 
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.IDENTIFIER).result()) {
-            this.report("Expected identifier token after val declaration");
-        }
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.IDENTIFIER).orElse(() => this.report("Expected identifier token after val declaration"));
         const identifier = this.tokenReader.previous().getValue();
 
-        if(!this.tokenReader.doTokenTypeMatch(TokenType.EQUAL).result()) {
-            this.report("Expected equal sign after val identifier");
-        }
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.EQUAL).orElse(() => this.report("Expected equal sign after val identifier"));
 
         let expression: Expression;
-        if(this.tokenReader.doTokenTypeMatch(TokenType.NEW).result()) {
-            if(!this.tokenReader.doTokenTypeMatch(TokenType.IDENTIFIER).result()) {
-                this.report("Expected identifier after new keyword");
-            }
+        if(this.tokenReader.consumeIfTokenTypeMatch(TokenType.NEW).doMatch()) {
+            this.tokenReader.consumeIfTokenTypeMatch(TokenType.IDENTIFIER).orElse(() => this.report("Expected identifier after new keyword"));
 
             expression = new ObjectInstantiation(this.tokenReader.previous().getValue());
         } else {
@@ -189,7 +165,7 @@ export class Parser {
     private parseAssignment(): Expression {
         const expression = this.parseEquality();
 
-        if(this.tokenReader.doTokenTypeMatch(TokenType.EQUAL).result()) {
+        if(this.tokenReader.consumeIfTokenTypeMatch(TokenType.EQUAL).doMatch()) {
             const value = this.parseAssignment();
 
             if(expression instanceof Accessor) {
@@ -203,7 +179,7 @@ export class Parser {
     private parseEquality(): Expression {
         let left = this.parseComparison();
 
-        while(this.tokenReader.doTokenTypeMatchAny(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL).result()) {
+        while(this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL).doMatch()) {
             const operator = this.tokenReader.previous();
             const right = this.parseComparison();
             left = new BinaryExpression(left, operator.getValue(), right);
@@ -215,7 +191,7 @@ export class Parser {
     private parseComparison(): Expression {
         let left = this.parseAddition();
 
-        while(this.tokenReader.doTokenTypeMatchAny(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL).result()) {
+        while(this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL).doMatch()) {
             const operator = this.tokenReader.previous();
             const right = this.parseAddition();
             left = new BinaryExpression(left, operator.getValue(), right);
@@ -227,7 +203,7 @@ export class Parser {
     private parseAddition(): Expression {
         let left = this.parseMultiplication();
 
-        while(this.tokenReader.doTokenTypeMatchAny(TokenType.MINUS, TokenType.PLUS).result()) {
+        while(this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.MINUS, TokenType.PLUS).doMatch()) {
             const operator = this.tokenReader.previous();
             const right = this.parseMultiplication();
             left = new BinaryExpression(left, operator.getValue(), right);
@@ -239,7 +215,7 @@ export class Parser {
     private parseMultiplication(): Expression{
         let left = this.parseUnary();
 
-        while(this.tokenReader.doTokenTypeMatchAny(TokenType.SLASH, TokenType.STAR, TokenType.MODULO).result()) {
+        while(this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.SLASH, TokenType.STAR, TokenType.MODULO).doMatch()) {
             const operator = this.tokenReader.previous();
             const right = this.parseUnary();
             left = new BinaryExpression(left, operator.getValue(), right);
@@ -249,7 +225,7 @@ export class Parser {
     }
 
     private parseUnary(): Expression {
-        if(this.tokenReader.doTokenTypeMatchAny(TokenType.MINUS, TokenType.BANG).result()) {
+        if(this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.MINUS, TokenType.BANG).doMatch()) {
             const operator = this.tokenReader.previous();
             const right = this.parseUnary();
             return new UnaryExpression(operator.getValue(), right);
@@ -262,7 +238,7 @@ export class Parser {
         let expression = this.parsePrimary() as Expression;
 
         if(expression instanceof Accessor) {
-            if(this.tokenReader.doTokenTypeMatch(TokenType.LEFT_PARENTHESIS).result()) {
+            if(this.tokenReader.consumeIfTokenTypeMatch(TokenType.LEFT_PARENTHESIS).doMatch()) {
                 return this.parseFunctionCall(expression as Accessor);
             }
         }
@@ -276,26 +252,23 @@ export class Parser {
     }
 
     private parsePrimary() {
-        if(this.tokenReader.doTokenTypeMatchAny(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN).result()) {
+        if(this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.NUMBER, TokenType.STRING, TokenType.BOOLEAN).doMatch()) {
             return new LiteralExpression(this.tokenReader.previous().getValue());
         }
 
-        if(this.tokenReader.doTokenTypeMatch(TokenType.IDENTIFIER).result()) {
+        if(this.tokenReader.consumeIfTokenTypeMatch(TokenType.IDENTIFIER).doMatch()) {
             return this.parseAccessor();
         }
 
-        if(this.tokenReader.doTokenTypeMatch(TokenType.LEFT_PARENTHESIS).result() && !this.tokenReader.isAtEnd()) {
+        if(this.tokenReader.consumeIfTokenTypeMatch(TokenType.LEFT_PARENTHESIS).doMatch() && !this.tokenReader.isAtEnd()) {
             const expression = this.parseExpression();
-
-            if(!this.tokenReader.doTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).result()) {
-                this.report("Expected right parenthesis after primary expression");
-            }
+            this.tokenReader.consumeIfTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).orElse(() => this.report("Expected right parenthesis after primary expression"));
 
             return expression
         }
 
 
-        if(this.tokenReader.doTokenTypeMatchAny(TokenType.NULL, TokenType.RIGHT_PARENTHESIS).result()) {
+        if(this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.NULL, TokenType.RIGHT_PARENTHESIS).doMatch()) {
             return new LiteralExpression(null);
         }
 
@@ -305,8 +278,8 @@ export class Parser {
 
     private parseFunctionCallArguments() {
         const args: Expression[] = [];
-        while(!this.tokenReader.doTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).result()) {
-            if(!this.tokenReader.doTokenTypeMatch(TokenType.COMMA).result() && args.length) {
+        while(!this.tokenReader.consumeIfTokenTypeMatch(TokenType.RIGHT_PARENTHESIS).doMatch()) {
+            if(!this.tokenReader.consumeIfTokenTypeMatch(TokenType.COMMA).doMatch() && args.length) {
                 this.report("Expected comma after argument");
             }
 
@@ -318,10 +291,8 @@ export class Parser {
 
     private parseAccessor() {
         const accessor = new Accessor(this.tokenReader.previous().getValue());
-        while(this.tokenReader.doTokenTypeMatch(TokenType.DOT).result()) {
-            if(!this.tokenReader.doTokenTypeMatch(TokenType.IDENTIFIER).result()) {
-                this.report("Expected identifier after dot");
-            }
+        while(this.tokenReader.consumeIfTokenTypeMatch(TokenType.DOT).doMatch()) {
+            this.tokenReader.consumeIfTokenTypeMatch(TokenType.IDENTIFIER).orElse(() => this.report("Expected identifier after dot"));
 
             accessor.addLowerSubAccessor(new Accessor(this.tokenReader.previous().getValue()));
         }
@@ -332,25 +303,20 @@ export class Parser {
     private parseTypedValueUntil(end: TokenType, separator?: Separator) {
         const typedValues: TypedDeclaration[] = [];
 
-        while(!this.tokenReader.doTokenTypeMatch(end).result()) {
+        while(!this.tokenReader.consumeIfTokenTypeMatch(end).doMatch()) {
             if(separator && typedValues.length) {
-                if(!this.tokenReader.doTokenTypeMatch(separator).result()) {
-                    this.report("Typed declaration expects a separator");
-                }
+                this.tokenReader.consumeIfTokenTypeMatch(separator).orElse(() => this.report("Typed declaration expects a separator"));
             }
 
             if(this.tokenReader.isAtEnd()) {
                 this.report('No typed declaration end');
             }
 
-            if(!this.tokenReader.doTokenTypeMatchAny(TokenType.UINT_TYPE, TokenType.STRING_TYPE, TokenType.BOOLEAN_TYPE).result()) {
-                this.report("Typed declaration expects a type (uint, string or boolean)");
-            }
+            this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.UINT_TYPE, TokenType.STRING_TYPE, TokenType.BOOLEAN_TYPE)
+                .orElse(() => this.report("Typed declaration expects a type (uint, string or boolean)"));
 
             const nativeType = tokenTypeToJuiceType(this.tokenReader.previous().getType());
-            if(!this.tokenReader.doTokenTypeMatch(TokenType.IDENTIFIER).result()) {
-                this.report("Typed declaration expects an identifier after its type");
-            }
+            this.tokenReader.consumeIfTokenTypeMatch(TokenType.IDENTIFIER).orElse(() => this.report("Typed declaration expects an identifier after its type"));
 
             typedValues.push(new TypedDeclaration(this.tokenReader.previous().getValue(), nativeType));
         }

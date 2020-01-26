@@ -6,27 +6,27 @@ export class TokenReader {
 
     constructor(private tokens: Token[]) {}
 
-    doTokenTypeMatchAny(...types: TokenType[]) {
+    consumeIfTokenTypeMatchAny(...types: TokenType[]) {
         const hasAnyType = this.current().hasAnyType(...types);
         if(hasAnyType) {
             this.advance();
         }
 
-        const result = () => hasAnyType;
+        const doMatch = () => hasAnyType;
         const orElse = (callback: () => void) => {
-            if(!result()) {
+            if(!doMatch()) {
                 callback();
             }
         };
 
         return {
-            result,
+            doMatch,
             orElse
         };
     }
 
-    doTokenTypeMatch(type: TokenType) {
-        return this.doTokenTypeMatchAny(type);
+    consumeIfTokenTypeMatch(type: TokenType) {
+        return this.consumeIfTokenTypeMatchAny(type);
     }
 
     current() {

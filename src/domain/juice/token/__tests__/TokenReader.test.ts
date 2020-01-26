@@ -58,7 +58,7 @@ describe('TokenReader', () => {
         const tokenReader = new TokenReader(tokens);
         let value = 1;
 
-        tokenReader.doTokenTypeMatch(TokenType.MINUS).orElse(() => value++);
+        tokenReader.consumeIfTokenTypeMatch(TokenType.MINUS).orElse(() => value++);
 
         expect(value).toEqual(1);
     });
@@ -68,7 +68,7 @@ describe('TokenReader', () => {
         const tokenReader = new TokenReader(tokens);
         let value = 1;
 
-        tokenReader.doTokenTypeMatch(TokenType.PLUS).orElse(() => value++);
+        tokenReader.consumeIfTokenTypeMatch(TokenType.PLUS).orElse(() => value++);
 
         expect(value).toEqual(2);
     });
