@@ -1,4 +1,6 @@
 # Juice
+[![Build Status](https://travis-ci.org/Jean-Gabriel/Juice.svg?branch=master)](https://travis-ci.org/Jean-Gabriel/Juice)
+
 Juice is the name of the project/programming language for my [virtual machine](https://github.com/Jean-Gabriel/JuiceVM).
 
 ## Why
