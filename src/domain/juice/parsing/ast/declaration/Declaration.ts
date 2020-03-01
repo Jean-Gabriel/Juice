@@ -1,1 +1,3 @@
-export interface Declaration {}
+import {AstVisitor} from "../AstVisitor";
+
+export interface Declaration extends AstVisitor{}

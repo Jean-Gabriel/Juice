@@ -1,7 +1,7 @@
 export enum JuiceType {
-    UINT,
-    STRING,
-    BOOLEAN,
-    OBJECT,
-    NOTHING,
+    UINT= "uint",
+    STRING = "string",
+    BOOLEAN = "boolean",
+    OBJECT = "object",
+    NOTHING = "nothing",
 }

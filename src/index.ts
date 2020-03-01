@@ -7,6 +7,7 @@ import {Reporter} from "./domain/juice/Reporter";
 import {FileManager} from "./domain/file/FileManager";
 import {Parser} from "./domain/juice/parsing/Parser";
 import {TokenReader} from "./domain/juice/token/TokenReader";
+import {TextEmitter} from "./infrastructure/juice/emitter/text/TextEmitter";
 
 const reporter: Reporter = new ConsoleReporter();
 
@@ -33,11 +34,12 @@ if(action == Action.TOKENIZE) {
 if(action == Action.PARSE) {
     const tokenizer = new Tokenizer(new StringReader(content), reporter);
     const tokens = tokenizer.tokenize();
+    const emitter = new TextEmitter();
 
     const parser = new Parser(new TokenReader(tokens), reporter);
     try {
-        const program = parser.parse() as any;
-        reporter.print(program.content);
+        const program = parser.parse();
+        reporter.print(`Emitting to string: \n${emitter.emit(program)}`);
     } catch (e) {
         reporter.print("Parsing was forcefully terminated.")
     }
