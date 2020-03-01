@@ -30,6 +30,24 @@ describe('tokenTypeToJuiceType', () => {
         expect(nativeType).toEqual(expectedNativeType);
     });
 
+    it('should convert object type token to native object type', () => {
+        const expectedNativeType = JuiceType.OBJECT;
+        const tokenType = TokenType.IDENTIFIER;
+
+        const nativeType = tokenTypeToJuiceType(tokenType);
+
+        expect(nativeType).toEqual(expectedNativeType);
+    });
+
+    it('should convert nothing type token to native nothing type', () => {
+        const expectedNativeType = JuiceType.NOTHING;
+        const tokenType = TokenType.NOTHING_TYPE;
+
+        const nativeType = tokenTypeToJuiceType(tokenType);
+
+        expect(nativeType).toEqual(expectedNativeType);
+    });
+
     it('should throw error when no native type is matching token type', () => {
         expect(() => tokenTypeToJuiceType(TokenType.COMMA)).toThrowError('Unsupported type');
     })

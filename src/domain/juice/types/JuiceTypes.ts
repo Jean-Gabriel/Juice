@@ -3,4 +3,5 @@ export enum JuiceType {
     STRING,
     BOOLEAN,
     OBJECT,
+    NOTHING,
 }

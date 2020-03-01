@@ -74,9 +74,17 @@ export class Parser {
         this.tokenReader.consumeIfTokenTypeMatch(TokenType.LEFT_PARENTHESIS)
             .orElse(() => this.report("Expected left parenthesis after function identifier"));
         const args = this.parseTypedValueUntil(this.ARGUMENT_END, this.ARGUMENT_SEPARATOR);
+
+        this.tokenReader.consumeIfTokenTypeMatch(TokenType.COLON)
+            .orElse(() => this.report("Expected colon after right parenthesis"));
+
+        this.tokenReader.consumeIfTokenTypeMatchAny(TokenType.BOOLEAN_TYPE, TokenType.STRING_TYPE, TokenType.UINT_TYPE, TokenType.NOTHING_TYPE, TokenType.IDENTIFIER)
+            .orElse(() => this.report("Expected type after colon"));
+
+        const returnType = tokenTypeToJuiceType(this.tokenReader.previousType());
         const body = this.parseFunctionBody();
 
-        return new FunctionDeclaration(identifier, args, body);
+        return new FunctionDeclaration(identifier, args, returnType, body);
     }
 
     private parseFunctionBody() {

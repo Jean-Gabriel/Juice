@@ -11,6 +11,7 @@ export enum TokenType {
     HASH,
     DOT,
     COMMA,
+    COLON,
 
     BANG,
     BANG_EQUAL,
@@ -25,6 +26,7 @@ export enum TokenType {
     UINT_TYPE,
     STRING_TYPE,
     BOOLEAN_TYPE,
+    NOTHING_TYPE,
 
     STRING,
     NUMBER,

@@ -33,6 +33,7 @@ export class Tokenizer {
                 case '/': this.addNonValuedToken(TokenType.SLASH); break;
                 case '.': this.addNonValuedToken(TokenType.DOT); break;
                 case ",": this.addNonValuedToken(TokenType.COMMA); break;
+                case ":": this.addNonValuedToken(TokenType.COLON); break;
 
                 case '!': this.addNonValuedToken(this.reader.match('=') ? TokenType.BANG_EQUAL : TokenType.BANG); break;
                 case '=': this.addNonValuedToken(this.reader.match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;

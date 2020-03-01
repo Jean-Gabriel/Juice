@@ -1,5 +1,5 @@
-fun main() {
-    fun thisShouldNotBeHere() {
+fun main(): nothing {
+    fun thisShouldNotBeHere(): nothing {
         return 0
     }
 }

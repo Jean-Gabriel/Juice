@@ -4,16 +4,16 @@ obj Person {
     boolean canDrive
 }
 
-fun canDriveWithAge(uint age, boolean a) {
+fun canDriveWithAge(uint age): boolean {
     return age >= 17
 }
 
-fun welcomeName(string message, string name) {
+fun welcomeName(string message, string name): nothing {
     print(message)
     print(name)
 }
 
-fun main() {
+fun main(): uint {
     val welcomeMessage = "Wow hi"
     val john = new Person
 

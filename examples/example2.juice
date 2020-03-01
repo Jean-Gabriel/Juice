@@ -1,13 +1,13 @@
-fun welcome(string message, string name) {
+fun welcome(string message, string name): nothing {
     print(message)
     print(name)
 }
 
-fun returnJohn() {
+fun returnJohn(): string {
     return "John"
 }
 
-fun main() {
+fun main(): nothing {
     val welcomeMessage = "Well hi"
     val name = returnJohn()
 
