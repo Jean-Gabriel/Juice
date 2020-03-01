@@ -10,8 +10,7 @@ This project also represents a good challenge for me which is a motivating facto
 ## Roadmap
 * Write the emitter.
 * Add `if`, `for`, `while` statement support.
-* Add type checking for basic types.
-* Add custom `obj` type support (I.e. if you have `obj Person` then the compiler will to support a typed declaration like `Person person`).
+* Add type checking.
 
 ## Example of Juice code
 ```
@@ -21,22 +20,22 @@ obj Person {
     boolean canDrive
 }
 
-fun canDriveWithAge(uint age, boolean a) {
+fun canDriveAt(uint age): boolean {
     return age >= 17
 }
 
-fun welcomeName(string message, string name) {
+fun welcomeName(string message, string name): nothing {
     print(message)
     print(name)
 }
 
-fun main() {
+fun main(): nothing {
     val welcomeMessage = "Wow hi"
     val john = new Person
 
     john.fullName = "John Pablo"
     john.age = 21
-    john.canDrive = canDriveWithAge(john.age)
+    john.canDrive = canDriveAt(john.age)
 
     welcomeName(welcomeMessage, john.fullName)
 
