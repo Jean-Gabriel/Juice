@@ -5,7 +5,7 @@ declaration                 ::= objDecl
                              | statement
 
 accessor                    ::= IDENTIFIER ( "." IDENTIFIER )*
-funDecl                     ::= "fun" IDENTIFIER "(" typedDecl ( "," typedDecl )* ")" ":"  funBody
+funDecl                     ::= "fun" IDENTIFIER "(" typedDecl ( "," typedDecl )* ")" ":" type funBody
 funBody                     ::= "{" ( statement | valDecl )* "}"
 returnStmt                  ::= "return" | expression ";"
 objDecl                     ::= "obj" IDENTIFIER "{" ( typedDecl ";" )*  "}"
