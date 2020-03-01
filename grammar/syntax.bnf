@@ -9,7 +9,7 @@ funDecl                     ::= "fun" IDENTIFIER "(" typedDecl ( "," typedDecl )
 funBody                     ::= "{" ( statement | valDecl )* "}"
 returnStmt                  ::= "return" | expression ";"
 objDecl                     ::= "obj" IDENTIFIER "{" ( typedDecl ";" )*  "}"
-typedDecl                   ::= ( NUMBER_TYPE | STRING_TYPE | BOOLEAN_TYPE ) IDENTIFIER
+typedDecl                   ::= ( NUMBER_TYPE | STRING_TYPE | BOOLEAN_TYPE | IDENTIFIER ) IDENTIFIER
 valDecl                     ::= "val" IDENTIFIER "=" ( expression | objInstantiation )
 objInstantiation            ::= "new" IDENTIFIER
 statement                   ::= printStmt

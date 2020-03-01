@@ -35,7 +35,10 @@ if(action == Action.PARSE) {
     const tokens = tokenizer.tokenize();
 
     const parser = new Parser(new TokenReader(tokens), reporter);
-    const program = parser.parse() as any;
-
-    reporter.print(program.content ? program.content : '');
+    try {
+        const program = parser.parse() as any;
+        reporter.print(program.content);
+    } catch (e) {
+        reporter.print("Parsing was forcefully terminated.")
+    }
 }

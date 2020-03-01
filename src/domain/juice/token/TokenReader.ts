@@ -53,7 +53,16 @@ export class TokenReader {
         if(this.currentToken == 0) {
             return this.tokens[this.currentToken];
         }
+
         return this.tokens[this.currentToken - 1];
+    }
+
+    previousValue() {
+        return this.previous().getValue();
+    }
+
+    previousType() {
+        return this.previous().getType();
     }
 
     isAtEnd() {

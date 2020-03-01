@@ -1,11 +1,13 @@
 import {Declaration} from "./Declaration";
 
 export class Program implements Declaration {
-    constructor(private content: Declaration[] = []) {}
+    public static empty(): Program {
+        return new Program([]);
+    }
+
+    constructor(private content: Declaration[]) {}
 
     add(declaration: Declaration) {
         this.content.push(declaration);
     }
-
-
 }
