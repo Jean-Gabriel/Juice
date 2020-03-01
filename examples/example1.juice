@@ -3,19 +3,19 @@ obj NumberInfo {
     boolean isPair
 }
 
-fun numberIsPair(NumberInfo numberInfo) {
+fun numberIsPair(NumberInfo numberInfo): boolean {
     return numberInfo.number % 2 == 0
 }
 
-fun printHello() {
+fun printHello(): nothing {
     print("hello")
 }
 
-fun returnOne() {
+fun returnOne(): uint {
     return 1
 }
 
-fun main() {
+fun main(): nothing {
     val expectedPairNumberInformation = new NumberInfo
 
     val test = 2

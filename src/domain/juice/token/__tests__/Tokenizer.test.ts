@@ -200,15 +200,17 @@ describe('Tokenizer', () => {
     });
 
     it('should tokenize function declaration', () => {
-        expectTokenEqual('fun returnTrue() { return true }', [
+        expectTokenEqual('fun returnTrue(): uint { return true }', [
             new MockToken().withType(TokenType.FUNCTION).withLexeme('fun').withPosition(new Point(1, 0)).get(),
             new MockToken().withType(TokenType.IDENTIFIER).withLexeme('returnTrue').withPosition(new Point(1, 4)).get(),
             new MockToken().withType(TokenType.LEFT_PARENTHESIS).withLexeme('(').withPosition(new Point(1, 14)).get(),
             new MockToken().withType(TokenType.RIGHT_PARENTHESIS).withLexeme(')').withPosition(new Point(1, 15)).get(),
-            new MockToken().withType(TokenType.LEFT_BRACKET).withLexeme('{').withPosition(new Point(1, 17)).get(),
-            new MockToken().withType(TokenType.RETURN).withLexeme('return').withPosition(new Point(1, 19)).get(),
-            new MockToken().withType(TokenType.BOOLEAN).withLexeme('true').withValue('true').withPosition(new Point(1, 26)).get(),
-            new MockToken().withType(TokenType.RIGHT_BRACKET).withLexeme('}').withPosition(new Point(1, 31)).get(),
+            new MockToken().withType(TokenType.COLON).withLexeme(':').withPosition(new Point(1, 16)).get(),
+            new MockToken().withType(TokenType.UINT_TYPE).withLexeme('uint').withPosition(new Point(1, 18)).get(),
+            new MockToken().withType(TokenType.LEFT_BRACKET).withLexeme('{').withPosition(new Point(1, 23)).get(),
+            new MockToken().withType(TokenType.RETURN).withLexeme('return').withPosition(new Point(1, 25)).get(),
+            new MockToken().withType(TokenType.BOOLEAN).withLexeme('true').withValue('true').withPosition(new Point(1, 32)).get(),
+            new MockToken().withType(TokenType.RIGHT_BRACKET).withLexeme('}').withPosition(new Point(1, 37)).get(),
         ]);
     });
 

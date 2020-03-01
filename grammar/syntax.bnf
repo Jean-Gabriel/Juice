@@ -5,11 +5,12 @@ declaration                 ::= objDecl
                              | statement
 
 accessor                    ::= IDENTIFIER ( "." IDENTIFIER )*
-funDecl                     ::= "fun" IDENTIFIER "(" typedDecl ( "," typedDecl )* ")" funBody
+funDecl                     ::= "fun" IDENTIFIER "(" typedDecl ( "," typedDecl )* ")" ":"  funBody
 funBody                     ::= "{" ( statement | valDecl )* "}"
 returnStmt                  ::= "return" | expression ";"
 objDecl                     ::= "obj" IDENTIFIER "{" ( typedDecl ";" )*  "}"
-typedDecl                   ::= ( NUMBER_TYPE | STRING_TYPE | BOOLEAN_TYPE | IDENTIFIER ) IDENTIFIER
+type                        ::= NUMBER_TYPE | STRING_TYPE | BOOLEAN_TYPE | IDENTIFIER
+typedDecl                   ::= type IDENTIFIER
 valDecl                     ::= "val" IDENTIFIER "=" ( expression | objInstantiation )
 objInstantiation            ::= "new" IDENTIFIER
 statement                   ::= printStmt

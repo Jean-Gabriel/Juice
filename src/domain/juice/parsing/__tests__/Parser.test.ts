@@ -113,31 +113,31 @@ describe('Parser', () => {
 
     describe('when encountering a function declaration', () => {
         it('should parse function declaration with empty body', () => {
-            expectAstEqual('fun test() {}', new Program([
-                new FunctionDeclaration('test', []),
+            expectAstEqual('fun test(): uint {}', new Program([
+                new FunctionDeclaration('test', [], JuiceType.UINT),
             ]));
         });
 
         it('should parse function declaration with one argument', () => {
-            expectAstEqual('fun test(uint num) {}', new Program([
+            expectAstEqual('fun test(uint num): SomeObject {}', new Program([
                 new FunctionDeclaration('test', [
                     new TypedDeclaration('num', JuiceType.UINT),
-                ]),
+                ], JuiceType.OBJECT),
             ]));
         });
 
         it('should parse function declaration with multiple arguments', () => {
-           expectAstEqual('fun test(string str, boolean bool) {}', new Program([
+           expectAstEqual('fun test(string str, boolean bool): nothing {}', new Program([
                new FunctionDeclaration('test', [
                    new TypedDeclaration('str', JuiceType.STRING),
                    new TypedDeclaration('bool', JuiceType.BOOLEAN),
-               ]),
+               ], JuiceType.NOTHING),
            ]));
         });
 
         it('should parse function declaration with body', () => {
-            expectAstEqual('fun test() { val x = 1 return x }', new Program([
-                new FunctionDeclaration('test', [], [
+            expectAstEqual('fun test(): string { val x = 1 return x }', new Program([
+                new FunctionDeclaration('test', [], JuiceType.STRING,[
                     new ValDeclaration('x', new LiteralExpression('1')),
                     new ReturnStatement(new Accessor('x')),
                 ]),
@@ -145,8 +145,8 @@ describe('Parser', () => {
         });
 
         it('should parse function body that return an expression', () => {
-            expectAstEqual('fun test() { return 2 + 2 }', new Program([
-                new FunctionDeclaration('test', [], [
+            expectAstEqual('fun test(): uint { return 2 + 2 }', new Program([
+                new FunctionDeclaration('test', [], JuiceType.UINT, [
                     new ReturnStatement(new BinaryExpression(
                         new LiteralExpression('2'), '+',
                         new LiteralExpression('2')
@@ -156,32 +156,44 @@ describe('Parser', () => {
         });
 
         it('should not parse function with missing right bracket', () => {
-            expectError('fun test() {');
+            expectError('fun test(): uint {');
         });
 
 
         it('should not parse function with missing left bracket', () => {
-            expectError('fun test() }');
+            expectError('fun test(): uint }');
         });
 
 
         it('should not parse function with missing brackets', () => {
-            expectError('fun test()');
+            expectError('fun test(): uint');
         });
 
         it('should not parse function on missing left parenthesis', () => {
-            expectError('fun test) {}');
+            expectError('fun test): uint {}');
         });
 
         it('should not parse function on missing right parenthesis', () => {
-            expectError('fun test( {}');
+            expectError('fun test(: uint {}');
         });
 
         it('should not parse function without parenthesis', () => {
-            expectError('fun test {}');
+            expectError('fun test: uint {}');
         });
 
         it('should not parse function without identifier', () => {
+            expectError('fun (): uint {}');
+        });
+
+        it('should not parse function without colon before type', () => {
+            expectError('fun () uint {}');
+        });
+
+        it('should not parse function without type after colon', () => {
+            expectError('fun (): {}');
+        });
+
+        it('should not parse function without specified return type', () => {
             expectError('fun () {}');
         });
     });

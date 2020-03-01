@@ -11,6 +11,8 @@ export function tokenTypeToJuiceType(tokenType: TokenType) {
             return JuiceType.BOOLEAN;
         case TokenType.IDENTIFIER:
             return JuiceType.OBJECT;
+        case TokenType.NOTHING_TYPE:
+            return JuiceType.NOTHING;
         default:
             throw new Error("Unsupported type");
     }

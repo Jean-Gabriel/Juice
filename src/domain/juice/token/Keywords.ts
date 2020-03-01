@@ -14,6 +14,7 @@ keywords.set('new', TokenType.NEW);
 keywords.set('uint', TokenType.UINT_TYPE);
 keywords.set('boolean', TokenType.BOOLEAN_TYPE);
 keywords.set('string', TokenType.STRING_TYPE);
+keywords.set('nothing', TokenType.NOTHING_TYPE);
 keywords.set('print', TokenType.PRINT);
 
 export { keywords };
