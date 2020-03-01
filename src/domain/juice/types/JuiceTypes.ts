@@ -1,5 +1,6 @@
 export enum JuiceType {
     UINT,
     STRING,
-    BOOLEAN
+    BOOLEAN,
+    OBJECT,
 }

@@ -53,7 +53,7 @@ describe('TokenReader', () => {
         expect(token).toEqual(expectedToken);
     });
 
-    it('should not call callback if type match', () => {
+    it('should not call callback if the type matches', () => {
         const tokens = [ new MockToken().withType(TokenType.MINUS).get() ];
         const tokenReader = new TokenReader(tokens);
         let value = 1;
@@ -63,7 +63,7 @@ describe('TokenReader', () => {
         expect(value).toEqual(1);
     });
 
-    it('should call callback if type do not match', () => {
+    it('should call callback if type does not match', () => {
         const tokens = [ new MockToken().withType(TokenType.MINUS).get() ];
         const tokenReader = new TokenReader(tokens);
         let value = 1;
@@ -71,5 +71,19 @@ describe('TokenReader', () => {
         tokenReader.consumeIfTokenTypeMatch(TokenType.PLUS).orElse(() => value++);
 
         expect(value).toEqual(2);
+    });
+
+    it('should return previous token value', () => {
+        const tokens = [ new MockToken().withType(TokenType.NUMBER).withValue("2").get() ];
+        const tokenReader = new TokenReader(tokens);
+
+        expect(tokenReader.previousValue()).toEqual("2");
+    });
+
+    it('should return previous token type', () => {
+        const tokens = [ new MockToken().withType(TokenType.EQUAL).get() ];
+        const tokenReader = new TokenReader(tokens);
+
+        expect(tokenReader.previousType()).toEqual(TokenType.EQUAL);
     });
 });

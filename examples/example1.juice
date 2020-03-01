@@ -3,8 +3,8 @@ obj NumberInfo {
     boolean isPair
 }
 
-fun numberIsPair(uint number) {
-    return number % 2 == 0
+fun numberIsPair(NumberInfo numberInfo) {
+    return numberInfo.number % 2 == 0
 }
 
 fun printHello() {
@@ -22,7 +22,7 @@ fun main() {
     test = returnOne() + 3 * 5 * ( 1 + 2 ) + 1
 
     expectedPairNumberInformation.number = 1 + 1
-    expectedPairNumberInformation.isPair = numberIsPair(expectedPairNumberInformation.number)
+    expectedPairNumberInformation.isPair = numberIsPair(expectedPairNumberInformation)
 
     print(expectedPairNumberInformation.isPair)
 }

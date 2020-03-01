@@ -88,11 +88,12 @@ describe('Parser', () => {
         });
 
         it('should parse object with typed attributes', () => {
-            expectAstEqual('obj test { string str uint num boolean bool }' , new Program([
+            expectAstEqual('obj test { string str uint num boolean bool OtherObject other }' , new Program([
                     new ObjectDeclaration('test', [
                         new TypedDeclaration('str', JuiceType.STRING),
                         new TypedDeclaration('num', JuiceType.UINT),
                         new TypedDeclaration('bool', JuiceType.BOOLEAN),
+                        new TypedDeclaration('other', JuiceType.OBJECT),
                     ])
             ]));
         });
@@ -328,9 +329,7 @@ describe('Parser', () => {
     function expectError(content: string) {
         const parser = provideParserFor(content);
 
-        const ast = parser.parse();
-
-        expect(ast).toEqual(new Program());
+        expect(() => parser.parse()).toThrowError();
         expect(reporter.error).toHaveBeenCalledTimes(2);
         expect(reporter.print).toHaveBeenCalledTimes(1);
     }
