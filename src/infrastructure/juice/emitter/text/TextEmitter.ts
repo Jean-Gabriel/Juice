@@ -16,8 +16,8 @@ import {Accessor} from "../../../../domain/juice/parsing/ast/expression/expressi
 import {Assignment} from "../../../../domain/juice/parsing/ast/Assignment";
 
 export class TextEmitter implements Emitter<String> {
+    private readonly indentSize = 4;
     private indentLevel = 0;
-    private indentSize = 4;
 
     emit(program: Program): String {
         return program.visit(this);
@@ -41,16 +41,6 @@ export class TextEmitter implements Emitter<String> {
 
         this.indentLevel--;
         return emittedDeclaration;
-    }
-
-    getIndent() {
-        let indent = "";
-
-        for(let i = 0;i < this.indentLevel * this.indentSize;i++) {
-            indent += " ";
-        }
-
-        return indent;
     }
 
     emitObjectDeclaration(declaration: ObjectDeclaration): String {
@@ -112,5 +102,15 @@ export class TextEmitter implements Emitter<String> {
 
     emitUnaryExpression(unary: UnaryExpression): String {
         return `(Unary expression)`;
+    }
+
+    getIndent() {
+        let indent = "";
+
+        for(let i = 0;i < this.indentLevel * this.indentSize;i++) {
+            indent += " ";
+        }
+
+        return indent;
     }
 }

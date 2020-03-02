@@ -7,9 +7,10 @@ import {Reporter} from "./domain/juice/Reporter";
 import {FileManager} from "./domain/file/FileManager";
 import {Parser} from "./domain/juice/parsing/Parser";
 import {TokenReader} from "./domain/juice/token/TokenReader";
-import {TextEmitter} from "./infrastructure/juice/emitter/text/TextEmitter";
+import {EmitterFactory} from "./infrastructure/juice/emitter/EmitterFactory";
 
 const reporter: Reporter = new ConsoleReporter();
+const emitterFactory = new EmitterFactory();
 
 if(process.argv.length < 4) {
     reporter.error('juice needs an action and a file. (juice action file)');
@@ -34,7 +35,7 @@ if(action == Action.TOKENIZE) {
 if(action == Action.PARSE) {
     const tokenizer = new Tokenizer(new StringReader(content), reporter);
     const tokens = tokenizer.tokenize();
-    const emitter = new TextEmitter();
+    const emitter = emitterFactory.createFor(action);
 
     const parser = new Parser(new TokenReader(tokens), reporter);
     try {
